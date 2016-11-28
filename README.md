@@ -1,7 +1,7 @@
 # Crypto-Elections-Board
 
 ## Setup
-This project was written using Python 2.7.12 and tested in Ubuntu 16.04 LTS. It should be portable across other environments, but is not assured to be. Acquiring Ubuntu and Python 2
+This project was written using Python 2.7.12 and tested in Ubuntu 16.04 LTS. It should be portable across other environments, but is not assured to be.
 
 ## Usage
 
