@@ -3,7 +3,18 @@
 import Tkinter as tk
 
 
-class ElectionBoard(tk.Frame):
+class ElectionBoard():
+    def __init__(self):
+        self.votes = []
+
+    def registerVoter(self):
+        return
+
+    def listenForVote(self):
+        return
+
+
+class ElectionBoardGUI(tk.Frame):
     def __init__(self, master=None):
         tk.Frame.__init__(self, master)
         self.grid()
