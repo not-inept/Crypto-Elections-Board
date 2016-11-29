@@ -25,6 +25,8 @@ Bulletin Board App
 - receiveVotes
 - verifyUniqueVotes
 - listVotes
+
 ####CA
 - decryptVotes
 - addVotes
+- sendVotes
