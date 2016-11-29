@@ -41,7 +41,7 @@ class BulletinBoardGUI(tk.Frame):
                 label.grid(row=i, column=j, sticky=tk.NSEW)
 
 
-if __name__ == 'main':
+if __name__ == '__main__':
     app = BulletinBoardGUI()
     app.master.title('Bulletin Board Application')
     app.mainloop()

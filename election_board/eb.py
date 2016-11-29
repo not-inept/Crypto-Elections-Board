@@ -44,7 +44,7 @@ class ElectionBoardGUI(tk.Frame):
         self.quitButton.grid()
 
 
-if __name__ == 'main':
+if __name__ == '__main__':
     app = ElectionBoardGUI()
     app.master.title('Election Board Application')
     app.mainloop()
