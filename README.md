@@ -1,7 +1,17 @@
 # Crypto-Elections-Board
 
 ## Setup
-This project was written using Python 2.7.12 and tested in Ubuntu 16.04 LTS. It should be portable across other environments, but is not assured to be.
+This project was written using Python 3.5.2 and tested in Ubuntu 16.04 LTS. It should be portable across other environments, but is not assured to be.
+
+Before running, please install dependencies.
+
+First, run:
+`sudo apt-get install libmpfr-dev libmpfr-doc libmpfr4 libmpfr4-dbg python-gmpy2 libmpc-dev`
+
+Then:
+`sudo pip3 install phe`
+
+Now you're all good to go!
 
 ## Usage
 
