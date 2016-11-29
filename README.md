@@ -9,7 +9,7 @@ First, run:
 `sudo apt-get install libmpfr-dev libmpfr-doc libmpfr4 libmpfr4-dbg python-gmpy2 libmpc-dev`
 
 Then:
-`sudo pip3 install phe`
+`sudo pip3 install phe pycrypto`
 
 Now you're all good to go!
 
@@ -24,12 +24,12 @@ Election Board App
 ####EB 
 - registerVoter 
 - isRegisteredVoter -- verifies registration
-- collectVotes -- auth the voter, get the users votes for each candidate
 - signVote -- blind sign the vote
 - encryptVote -- encrypt with p pke
-- sendVotes -- send the votes for the voter for each candidate
+- sendVotes -- verify voter, send the votes for the voter for each candidate
 - receiveTotal -- receive the total from the ca
 - announceResults -- announce the results from ca
+- startVote
 
 Bulletin Board App
 ####BB

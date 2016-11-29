@@ -7,5 +7,6 @@ if __name__ == '__main__':
     encrypted_vote_list = [public_key.encrypt(x) for x in vote_list]
     x = encrypted_vote_list[0]
     for i in range(1, len(vote_list)):
+        print(encrypted_vote_list[i])
         x += encrypted_vote_list[i]
     print(private_key.decrypt(x))
