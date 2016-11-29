@@ -12,19 +12,24 @@ class ElectionBoard():
         self.voters = []
 
     def registerVoter(self):
-        username = len(self.voters)
+        user = len(self.voters)
         N = 64
         password = ''.join(random.SystemRandom().choice(string.ascii_uppercase + string.digits) for _ in range(N))
         self.voters.append(hashlib.sha256(password).hexdigest())
-        return (username, password)
+        return (user, password)
 
-    def listenForVote(self):
-        return
+    def isRegisteredVoter(self, user, password):
+        if (len(self.voters) > user):
+            return self.voters[user] == hashlib.sha256(password).hexdigest()
+        else:
+            return False
 
-
-class CountingAuthority():
-    def __init_(self):
-        return
+    def collectVotes(self, user, password, votes):
+        if (self.isRegisteredVoter(user, password)):
+            # sign votes/encrypt votes
+            # send votes
+            # zkp?
+            return
 
 
 class ElectionBoardGUI(tk.Frame):
@@ -39,6 +44,7 @@ class ElectionBoardGUI(tk.Frame):
         self.quitButton.grid()
 
 
-app = ElectionBoardGUI()
-app.master.title('Election Board Application')
-app.mainloop()
+if __name__ == 'main':
+    app = ElectionBoardGUI()
+    app.master.title('Election Board Application')
+    app.mainloop()

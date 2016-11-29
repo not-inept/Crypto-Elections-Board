@@ -13,7 +13,8 @@ Each class is designed with a GUI using the Python standard libraray Tkinter. Th
 Election Board App
 ####EB 
 - registerVoter 
-- collectVotes -- get the users votes for each candidate
+- isRegisteredVoter -- verifies registration
+- collectVotes -- auth the voter, get the users votes for each candidate
 - signVote -- blind sign the vote
 - encryptVote -- encrypt with p pke
 - sendVotes -- send the votes for the voter for each candidate
