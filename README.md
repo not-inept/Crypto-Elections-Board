@@ -6,10 +6,10 @@ This project was written using Python 3.5.2 and tested in Ubuntu 16.04 LTS. It s
 Before running, please install dependencies.
 
 First, run:
-`sudo apt-get install libmpfr-dev libmpfr-doc libmpfr4 libmpfr4-dbg python-gmpy2 libmpc-dev`
+`sudo apt-get install libmpfr-dev libmpfr-doc libmpfr4 libmpfr4-dbg libmpc-dev python3-tk`
 
 Then:
-`sudo pip3 install phe rsa`
+`sudo pip3 install phe pycrypto`
 
 Now you're all good to go!
 

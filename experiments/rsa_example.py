@@ -1,5 +1,6 @@
 import rsa
 import json
+import random
 from binascii import hexlify
 
 # KEY GENERATION ###
@@ -34,11 +35,27 @@ message = json.dumps({ 'latest': '2012.12.12',
 # Here you might want to input it manually or something.
 privkey = rsa.PrivateKey.load_pkcs1(privkey)
 
+
 # The signature to attach to the update_data
 # You can even add it to update_data, just remember to `del update_data['signature']` before checking the signature
+# def getBlindM(e, N, m):
+#     factors = [set() for n in range(N)]
+#     factored = collections.defaultdict(set)
+#     for n in range(2, N):
+#             if not factors[n]:           # no factors yet -> n is prime
+#                 for m in range(n, N, n): # all multiples of n up to N
+#                     factors[m].add(n)
+#                     factored[n].add(m)
 
+#         for n in range(1, N):
+#             coprimes = set(range(1, N))  # start with all the numbers in the range
+#             for f in factors[n]:         # eliminate numbers that share a prime factor
+#                 coprimes -= factored[f]
+#             print("%d is coprime with %r others" % (n, len(coprimes)))
+#     r = coprimes[random.SystemRandom().randint(0,len(coprimes)-1)]
+#     return ''.join((m*pow(float(r),e)) % N)
 signature = rsa.pkcs1.sign(message, privkey, 'SHA-256')
-
+print(signature)
 
 ### UPDATE CHECKING ###
 ### This is what you do in your program to check a new update

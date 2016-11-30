@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import Tkinter as tk
+import tkinter as tk
 
 
 # Graphical BulletenBoardGUI class manages data with BullitenBoard object
