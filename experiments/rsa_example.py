@@ -37,7 +37,10 @@ privkey = rsa.PrivateKey.load_pkcs1(privkey)
 # The signature to attach to the update_data
 # You can even add it to update_data, just remember to `del update_data['signature']` before checking the signature
 
-signature = rsa.pkcs1.sign(message, privkey, 'SHA-256')
+try:
+    signature = rsa.pkcs1.sign(message, privkey, 'SHA-256')
+except rsa.pkcs1.VerificationError:
+    print('verif failed, be sure to catch this!')
 
 
 ### UPDATE CHECKING ###
