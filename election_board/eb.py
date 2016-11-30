@@ -34,6 +34,8 @@ class ElectionBoard():
             return
 
     def startVote(self):
+        # check to make sure that bb server is running at host
+
         return
 
 
