@@ -10,6 +10,7 @@ class Comm():
     def __init__(self, me, port):
         self.s = None
         self.con = None
+        self.verified = False
         self.me = me
         self.port = port
         f = open('./' + self.me + '_rsa_public.pem', 'r')
@@ -28,7 +29,14 @@ class Comm():
         blind_signature = priv.sign(blind, 0)
         return blind_signature, r
 
-    def verifySignature(self, them, blind_signature, msg, r):
+    def verifyBlindSignature(self, them, res):
+        try:
+            res = json.loads(res)
+        except ValueError:
+            return False
+        r = res['r']
+        blind_signature = res['sig']
+        msg = res['phrase']
         f = open('./' + them + '_rsa_public.pem', 'r')
         theirPub = RSA.importKey(f.read())
         f.close()
@@ -37,6 +45,12 @@ class Comm():
         hsh.update(msg.encode('utf-8'))
         msgDigest = hsh.digest()
         return theirPub.verify(msgDigest, (signature,))
+
+    def sendMessage(self, them, msg):
+        return
+
+    def receiveMessage(self, them, msg):
+        return
 
     def sendHandshake(self, them):
         N = 512
@@ -48,11 +62,24 @@ class Comm():
         msg = json.dumps({'sig': signature, 'phrase': phrase, 'r': r})
         self.conn.send(msg)
 
-    def receiveHandshake(self):
-        return
+    def receiveHandshake(self, them):
+        res = self.conn.recv(4096)
+        if not self.verifySignature(them, res):
+            self.closeConn()
+        else:
+            self.verified = True
 
-    def initiateConn(self):
-        return
+    def initiateConn(self, port):
+        # create socket and make self visible
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        s.bind(('localhost', port))
+        s.listen(0)
+        self.con, address = s.accept()
 
-    def joinConn(self):
-        return
+    def joinConn(self, host, port):
+        self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.s.connect((host, port))
+        self.conn = self.s
+
+    def closeConn(self):
+        self.s.close()

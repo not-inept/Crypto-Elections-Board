@@ -4,11 +4,10 @@ import tkinter as tk
 import random
 import string
 import hashlib
-import Crypto-Elections-Board
+
 
 class ElectionBoard():
     def __init__(self):
-        self.votes = []
         self.voters = []
         self.ca_location = ('localhost', 1337)
         self.bb_location = ('localhost', 6969)
@@ -28,17 +27,20 @@ class ElectionBoard():
         else:
             return False
 
-    def sendVotes(self, user, password, votes):
+    def startVote(self):
+        # check to make sure that bb server is running at host
+
+        return
+
+    def sendVote(self, user, password, vote):
         if (self.isRegisteredVoter(user, password)):
+            for 
             # sign votes/encrypt votes
             # send votes
             # zkp?
             return
 
-    def startVote(self):
-        # check to make sure that bb server is running at host
 
-        return
 
 
 class ElectionBoardGUI(tk.Frame):

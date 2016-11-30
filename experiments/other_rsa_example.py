@@ -1,7 +1,7 @@
 from Crypto.PublicKey import RSA
 from Crypto.Hash import SHA256
 from random import SystemRandom
-
+import json
 # Signing authority (SA) key
 priv = RSA.generate(4096)
 pub = priv.publickey()
@@ -22,7 +22,9 @@ msg_blinded = pub.blind(msgDigest, r)
 
 # SA computes
 msg_blinded_signature = priv.sign(msg_blinded, 0)
-print(msg_blinded_signature)
+mjson = json.dumps(msg_blinded_signature[0])
+ojson = json.loads(mjson)
+print(msg_blinded_signature[0] == ojson)
 # user computes
 msg_signature = pub.unblind(msg_blinded_signature[0], r)
 
