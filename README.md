@@ -9,7 +9,7 @@ First, run:
 `sudo apt-get install libmpfr-dev libmpfr-doc libmpfr4 libmpfr4-dbg python-gmpy2 libmpc-dev`
 
 Then:
-`sudo pip3 install phe pycrypto`
+`sudo pip3 install phe rsa`
 
 Now you're all good to go!
 
