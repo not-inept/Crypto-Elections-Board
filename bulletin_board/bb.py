@@ -17,9 +17,7 @@ class BulletinBoard():
     def listVotes(self):
         return
 
-
-class CountingAuthority():
-    def __init_(self):
+    def listenForEb(self):
         return
 
 

@@ -3,7 +3,7 @@ from Crypto.Hash import SHA256
 from random import SystemRandom
 
 # Signing authority (SA) key
-priv = RSA.generate(3072)
+priv = RSA.generate(4096)
 pub = priv.publickey()
 
 ## Protocol: Blind signature ##
