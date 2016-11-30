@@ -14,7 +14,8 @@ class ElectionBoard():
     def registerVoter(self):
         user = len(self.voters)
         N = 64
-        password = ''.join(random.SystemRandom().choice(string.ascii_uppercase + string.digits) for _ in range(N))
+        password = ''.join(random.SystemRandom().choice(
+            string.ascii_uppercase + string.digits) for _ in range(N))
         print(password)
         self.voters.append(hashlib.sha256(password).hexdigest())
         return (user, password)
@@ -39,11 +40,12 @@ class ElectionBoard():
 class ElectionBoardGUI(tk.Frame):
     def __init__(self, master=None):
         tk.Frame.__init__(self, master)
+        master.minsize(400, 400)
         self.grid()
         self.createWidgets()
 
     def createWidgets(self):
-        self.registerButton = tk.Button(self, text='Quit',
+        self.registerButton = tk.Button(self, text='Register',
                                         command=self.displayRegistration)
         self.registerButton.grid()
 
@@ -56,6 +58,7 @@ class ElectionBoardGUI(tk.Frame):
 
 
 if __name__ == '__main__':
-    app = ElectionBoardGUI()
+    window = tk.Tk()
+    app = ElectionBoardGUI(window)
     app.master.title('Election Board Application')
     app.mainloop()
