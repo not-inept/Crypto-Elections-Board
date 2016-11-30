@@ -7,6 +7,8 @@ import tkinter as tk
 class BulletinBoard():
     def __init__(self):
         self.votes = []
+        self.ca_location = ('localhost', 1337)
+        self.eb_location = ('localhost', 5858)
 
     def verifyUniqueVotes(self):
         return

@@ -10,6 +10,8 @@ class ElectionBoard():
     def __init__(self):
         self.votes = []
         self.voters = []
+        self.ca_location = ('localhost', 1337)
+        self.bb_location = ('localhost', 6969)
 
     def registerVoter(self):
         user = len(self.voters)
