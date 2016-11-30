@@ -4,7 +4,7 @@ import tkinter as tk
 import random
 import string
 import hashlib
-
+import Crypto-Elections-Board
 
 class ElectionBoard():
     def __init__(self):
