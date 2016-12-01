@@ -34,33 +34,75 @@ class ElectionBoard():
 
     def sendVote(self, user, password, vote):
         if (self.isRegisteredVoter(user, password)):
-            for 
+            # for
             # sign votes/encrypt votes
             # send votes
             # zkp?
             return
 
 
+# class that displays quit and confirm type buttons on each page
+class ButtonFrame(tk.Frame):
+    def __init__(self, master, buttonText, buttonCommand, quitCommand):
+        tk.Frame.__init__(self, master)
+        otherButton = tk.Button(self, text=buttonText, command=buttonCommand)
+        quitButton = tk.Button(self, text='Quit', command=quitCommand)
+        otherButton.pack(side=tk.LEFT, padx=60, pady=10)
+        quitButton.pack(side=tk.RIGHT, padx=60, pady=10)
 
 
 class ElectionBoardGUI(tk.Frame):
-    def __init__(self, master=None):
+    def __init__(self, master):
         tk.Frame.__init__(self, master)
         master.minsize(400, 400)
-        self.grid()
-        self.createWidgets()
 
-    def createWidgets(self):
-        self.registerButton = tk.Button(self, text='Register',
-                                        command=self.displayRegistration)
-        self.registerButton.grid()
+        temp = tk.Frame(master)
+        b1 = tk.Button(temp, text="Register Voter",
+                       command=self.displayRegistration)
+        b2 = tk.Button(temp, text="Start Vote",
+                       command=self.displayStartVote)
+        b1.pack()
+        b2.pack()
+        label1 = tk.Label(master, text="1st page")
+        label1.pack()
+        temp.pack()
+        temp = ButtonFrame(master, "OK", self.quit, self.quit)
+        temp.pack(side=tk.BOTTOM)
 
-        self.quitButton = tk.Button(self, text='Quit',
-                                    command=self.quit)
-        self.quitButton.grid()
-
+    # displays the registration screen
     def displayRegistration(self):
-        return
+        print("register")
+        regWin = tk.Toplevel(self)
+        regWin.title("Register Voter")
+
+        username = tk.StringVar()
+        usernameBox = tk.Entry(regWin, textvariable=username)
+        usernameLabel = tk.Label(regWin, text="UserName: ")
+        usernameLabel.pack()
+        usernameBox.pack()
+
+        password = tk.StringVar()
+        passwordBox = tk.Entry(regWin, textvariable=password)
+        passwordLabel = tk.Label(regWin, text="Password: ")
+        passwordLabel.pack()
+        passwordBox.pack()
+
+        temp = ButtonFrame(regWin, "OK", regWin.destroy, regWin.destroy)
+        temp.pack(side=tk.BOTTOM)
+
+    # displays the start voting screen
+    def displayStartVote(self):
+        print("startvote")
+        voteWin = tk.Toplevel()
+        voteWin.title("Start Voting")
+
+        voteButton = tk.Button(voteWin, text="Vote", command=voteWin.destroy)
+        voteButton.pack()
+        endButt = tk.Button(voteWin, text="End Vote", command=voteWin.destroy)
+        endButt.pack()
+
+        temp = ButtonFrame(voteWin, "OK", voteWin.destroy, voteWin.destroy)
+        temp.pack(side=tk.BOTTOM)
 
 
 if __name__ == '__main__':
