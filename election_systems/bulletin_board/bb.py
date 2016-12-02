@@ -21,24 +21,26 @@ class BulletinBoard():
         self.comm = Comm('bb', 6969)
 
     def receiveVotes(self, tkobj):
+        app.update_idletasks()
+        app.update()
         self.comm.initiateConn()
         keepGoing = True
         while keepGoing:
             res = self.comm.receiveMessage('eb')
             msg = json.loads(res)
+            print(msg)
             if msg == 'ENDVOTING':
                 keepGoing = False
             else:
-                print(msg)
                 self.votes.append(msg)
-                self.listVotes()
                 tkobj.updateVoteList()
             app.update_idletasks()
             app.update()
-
-    def listVotes(self):
-        # print(self.votes)
-        return
+        self.comm.closeConn()
+        self.comm.joinConn(self.ca_location[0], self.ca_location[1])
+        self.comm.sendMessage(json.dumps(self.votes))
+        self.comm.closeConn()
+        quit()
 
 
 class BulletinBoardGUI(tk.Frame):

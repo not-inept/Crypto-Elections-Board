@@ -215,7 +215,9 @@ class ElectionBoardGUI(tk.Frame):
                                 text="Waiting for results to be tallied...")
         waitingLabel.pack()
         self.main.pack(fill=tk.BOTH, expand=True)
-
+        self.update_idletasks()
+        self.update()
+        self.model.receiveTotals()
 
 if __name__ == '__main__':
     window = tk.Tk()

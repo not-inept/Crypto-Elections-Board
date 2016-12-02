@@ -54,7 +54,7 @@ class Comm():
         self.conn.send(json.dumps(msg).encode('utf-8'))
 
     def receiveMessage(self, them):
-        res = self.conn.recv(8192)
+        res = self.conn.recv(48000)
         if self.verifyBlindSignature(them, res):
             return json.loads(res.decode())['phrase']
         else:
