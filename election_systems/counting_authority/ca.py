@@ -1,4 +1,3 @@
-from election_systems.common.communications import Comm
 import json
 import os
 import sys
@@ -6,7 +5,7 @@ import inspect
 currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
 parentdir = os.path.dirname(currentdir)
 sys.path.insert(0,parentdir) 
-from common.communications import Comm
+import tkinter as tk
 
 
 class CountingAuthority():
@@ -23,3 +22,14 @@ class CountingAuthority():
 
     def receiveVotes(self):
         self.comm.initiateConn()
+
+
+class CountingAuthorityGUI():
+    def __init__(self, master):
+        tk.Frame.__init__(self, master)
+        myLabel = tk.Label(master, text="Waiting for votes...")
+        myLabel.pack()
+
+    def clearWindow(self):
+        for widget in self.winfo_children():
+            widget.destroy()
