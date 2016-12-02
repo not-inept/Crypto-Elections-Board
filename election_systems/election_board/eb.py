@@ -96,10 +96,49 @@ class ElectionBoardGUI(tk.Frame):
         voteWin = tk.Toplevel()
         voteWin.title("Start Voting")
 
-        voteButton = tk.Button(voteWin, text="Vote", command=voteWin.destroy)
+        voteButton = tk.Button(voteWin, text="Vote",
+                               command=self.displayVoting)
         voteButton.pack()
-        endButt = tk.Button(voteWin, text="End Vote", command=voteWin.destroy)
+        endButt = tk.Button(voteWin, text="End Vote",
+                            command=self.displayEndVoting)
         endButt.pack()
+
+        temp = ButtonFrame(voteWin, "OK", voteWin.destroy, voteWin.destroy)
+        temp.pack(side=tk.BOTTOM)
+
+    def displayVoting(self):
+        print("voting")
+        voteWin = tk.Toplevel()
+        voteWin.title("Voting Screen")
+
+        temp = tk.Frame(voteWin)
+        username = tk.StringVar()
+        usernameBox = tk.Entry(temp, textvariable=username)
+        usernameLabel = tk.Label(temp, text="UserName: ")
+        usernameLabel.pack()
+        usernameBox.pack()
+
+        password = tk.StringVar()
+        passwordBox = tk.Entry(temp, textvariable=password)
+        passwordLabel = tk.Label(temp, text="Password: ")
+        passwordLabel.pack()
+        passwordBox.pack()
+
+        voteText = tk.Label(temp, text="Who are you voting for?")
+        voteText.pack()
+        temp.pack()
+
+        temp = ButtonFrame(voteWin, "Submit", voteWin.destroy, voteWin.destroy)
+        temp.pack(side=tk.BOTTOM)
+
+    def displayEndVoting(self):
+        print("End Voting")
+        voteWin = tk.Toplevel()
+        voteWin.title("End Voting Screen")
+
+        waitingLabel = tk.Label(voteWin,
+                                text="waiting for tallies to finish...")
+        waitingLabel.pack()
 
         temp = ButtonFrame(voteWin, "OK", voteWin.destroy, voteWin.destroy)
         temp.pack(side=tk.BOTTOM)
