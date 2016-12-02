@@ -17,7 +17,7 @@ class Comm():
         self.pub = RSA.importKey(f.read())
         f.close()
 
-    def getKey(who):
+    def getKey(self, who):
         return
 
     def blindSignRSA(self, priv, pub, msg):
