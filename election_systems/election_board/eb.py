@@ -77,7 +77,7 @@ class ElectionBoard():
 
 # class that displays quit and confirm type buttons on each page
 class ButtonFrame(tk.Frame):
-    def __init__(self, master, buttonText, buttonCommand, quitCommand):
+    def __init__(self, master, buttonText, buttonCommand):
         tk.Frame.__init__(self, master)
         otherButton = tk.Button(self, text=buttonText, command=buttonCommand)
         # quitButton = tk.Button(self, text='Quit', command=quitCommand)
@@ -98,21 +98,20 @@ class ElectionBoardGUI(tk.Frame):
 
         self.main = tk.Frame(master, width=400, height=400)
         temp = ButtonFrame(self.main, "Register Voter",
-                           self.displayRegistration, self.displayRegistration)
+                           self.displayRegistration)
         temp.pack(side=tk.LEFT)
 
         temp = ButtonFrame(self.main, "Start Vote",
-                           self.displayStartVote, self.displayStartVote)
+                           self.displayStartVote)
         temp.pack(side=tk.RIGHT)
 
-        temp = ButtonFrame(self.main, "Close", self.quit, self.quit)
+        temp = ButtonFrame(self.main, "Close", self.quit)
         temp.pack(side=tk.BOTTOM)
 
         self.main.pack(fill=tk.BOTH, expand=True)
 
     # displays the registration screen
     def displayRegistration(self):
-        print("register")
         user, passw = self.model.registerVoter()
         regWin = tk.Toplevel(self)
         regWin.title("Register Voter")
@@ -132,7 +131,7 @@ class ElectionBoardGUI(tk.Frame):
         passwordLabel = tk.Label(regWin, text="Password: ")
         passwordLabel.pack()
         passwordBox.pack()
-        temp = ButtonFrame(regWin, "Close", regWin.destroy, regWin.destroy)
+        temp = ButtonFrame(regWin, "Close", regWin.destroy)
         temp.pack(side=tk.BOTTOM)
 
     # displays the start voting screen
@@ -143,12 +142,10 @@ class ElectionBoardGUI(tk.Frame):
             self.master.title("Voting Period")
             self.main.destroy()
             self.main = tk.Frame(self.master, width=400, height=400)
-            temp = ButtonFrame(self.main, "Vote",
-                               self.displayVoting, self.displayVoting)
+            temp = ButtonFrame(self.main, "Vote", self.displayVoting)
             temp.pack(side=tk.LEFT)
 
-            temp = ButtonFrame(self.main, "End Vote",
-                               self.displayEndVoting, self.displayEndVoting)
+            temp = ButtonFrame(self.main, "End Vote", self.displayEndVoting)
             temp.pack(side=tk.RIGHT)
             self.main.pack(fill=tk.BOTH, expand=True)
 
@@ -167,7 +164,6 @@ class ElectionBoardGUI(tk.Frame):
         me.destroy()
 
     def displayVoting(self):
-        print("voting")
         voteWin = tk.Toplevel()
         voteWin.title("Voting Card")
 
@@ -198,10 +194,6 @@ class ElectionBoardGUI(tk.Frame):
                            lambda: self.submitVote(username.get(),
                                                    password.get(),
                                                    var.get(),
-                                                   voteWin),
-                           lambda: self.submitVote(username.get(),
-                                                   password.get(),
-                                                   var.get(),
                                                    voteWin))
         temp.pack(side=tk.BOTTOM)
 
@@ -218,6 +210,7 @@ class ElectionBoardGUI(tk.Frame):
         self.update_idletasks()
         self.update()
         self.model.receiveTotals()
+
 
 if __name__ == '__main__':
     window = tk.Tk()
