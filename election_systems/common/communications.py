@@ -8,7 +8,7 @@ from Crypto.Hash import SHA256
 class Comm():
     def __init__(self, me, port):
         self.s = None
-        self.con = None
+        self.conn = None
         self.me = me
         self.port = port
         f = open('../common/' + self.me + '_rsa_public.pem', 'r')
@@ -35,11 +35,11 @@ class Comm():
 
     def verifyBlindSignature(self, them, res):
         try:
-            res = json.loads(res)
+            res = json.loads(res.decode())
         except ValueError:
             return False
-        r = res['r']
-        blind_signature = res['sig']
+        r = int(res['r'])
+        blind_signature = res['sig'][0]
         msg = res['phrase']
         theirPub = self.getKey(them)
         signature = theirPub.unblind(blind_signature, r)
@@ -49,14 +49,14 @@ class Comm():
         return theirPub.verify(msgDigest, (signature,))
 
     def sendMessage(self, msg):
-        blind, r = self.bindSignRSA(msg)
+        blind, r = self.blindSignRSA(msg)
         msg = {'sig': blind, 'r': r, 'phrase': msg}
-        self.s.send(json.dumps(msg))
+        self.conn.send(json.dumps(msg).encode('utf-8'))
 
     def receiveMessage(self, them):
-        res = self.s.recv(8192)
+        res = self.conn.recv(8192)
         if self.verifyBlindSignature(them, res):
-            return json.loads(res)['phrase']
+            return json.loads(res.decode())['phrase']
         else:
             self.quit()
 
@@ -64,18 +64,20 @@ class Comm():
         # create socket and make self visible
         self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.s.bind(('localhost', self.port))
-        self.s.listen(0)
-        self.con, address = self.s.accept()
+        self.s.listen(1)
+        print('initiated')
+        self.conn, address = self.s.accept()
 
     def joinConn(self, host, port):
         self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        print('attempting to join')
         self.s.connect((host, port))
         self.conn = self.s
 
     def closeConn(self):
         self.s.close()
         self.s = None
-        self.con = None
+        self.conn = None
 
     def quit(self):
         self.closeConn()

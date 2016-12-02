@@ -19,7 +19,7 @@ class BulletinBoard():
         self.eb_location = ('localhost', 5858)
         self.comm = Comm('bb', 6969)
 
-    def receiveVotes(self):
+    def receiveVotes(self, tkobj):
         self.comm.initiateConn()
         keepGoing = True
         while keepGoing:
@@ -28,35 +28,41 @@ class BulletinBoard():
             if msg == 'ENDVOTING':
                 keepGoing = False
             else:
-                self.votes.append(json.loads(msg['phrase']))
+                print(msg)
+                self.votes.append(msg)
                 self.listVotes()
+                tkobj.updateVoteList()
 
     def listVotes(self):
+        # print(self.votes)
         return
 
 
 class BulletinBoardGUI(tk.Frame):
     def __init__(self, master=None):
+        self.model = BulletinBoard()
         tk.Frame.__init__(self, master)
         self.grid()
         self.createWidgets()
-        self.bulletinBoard = BulletinBoard()
 
     def createWidgets(self):
         self.quitButton = tk.Button(self, text='Quit',
                                     command=self.quit)
         self.quitButton.grid()
-
-        for i in range(100):
-            for j in range(4):
-                label = tk.Label(text='%d.%d' % (i, j), relief=tk.RIDGE)
-                label.grid(row=i, column=j, sticky=tk.NSEW)
+        self.model.receiveVotes(self)
+        # for i in range(100):
+        #     for j in range(4):
+        #         label = tk.Label(text='%d.%d' % (i, j), relief=tk.RIDGE)
+        #         label.grid(row=i, column=j, sticky=tk.NSEW)
 
     def votersCollected(self):
         vLabel = tk.Label(text="Voters Calculated")
         vLabel.pack()
         quitButton = tk.Button(self, text="Quit", command=self.quit)
         quitButton.pack()
+
+    def updateVoteList(self):
+        print('should do the thing')
 
 
 if __name__ == '__main__':

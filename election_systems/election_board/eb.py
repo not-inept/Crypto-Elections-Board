@@ -22,37 +22,39 @@ class ElectionBoard():
         self.bb_location = ('localhost', 6969)
         self.comm = Comm('eb', 5858)
         self.pPub, self.pPriv = paillier.generate_paillier_keypair()
+        self.voting = False
+        self.waiting = False
 
     def registerVoter(self):
-        user = len(self.voters)
-        N = 64
-        user = ''.join(random.SystemRandom().choice(
-            string.ascii_uppercase + string.digits) for _ in range(N))
-        while user in self.voters:
+        if not self.voting:
+            user = len(self.voters)
+            N = 64
             user = ''.join(random.SystemRandom().choice(
                 string.ascii_uppercase + string.digits) for _ in range(N))
-        password = ''.join(random.SystemRandom().choice(
-            string.ascii_uppercase + string.digits) for _ in range(N))
-        self.voters[user] = hashlib.sha256(
-            password.encode('utf-8')).hexdigest()
-        return user, password
+            while user in self.voters:
+                user = ''.join(random.SystemRandom().choice(
+                    string.ascii_uppercase + string.digits) for _ in range(N))
+            password = ''.join(random.SystemRandom().choice(
+                string.ascii_uppercase + string.digits) for _ in range(N))
+            self.voters[user] = hashlib.sha256(
+                password.encode('utf-8')).hexdigest()
+            return user, password
+        return None, None
 
     def isValidVoter(self, user, password):
-        if (len(self.voters) > user):
-            return self.voters[user] == hashlib.sha256(password).hexdigest()
-        else:
-            return False
+        return self.voters[user] == hashlib.sha256(password.encode('utf-8')).hexdigest()
 
     def startVote(self):
         # check to make sure that bb server is running at host
         try:
-            self.comm.joinConn(self, self.bb_location[0], self.bb_location[1])
+            self.comm.joinConn(self.bb_location[0], self.bb_location[1])
+            self.voting = True
         except:
             return False
         return True
 
     def sendVote(self, user, password, vote):
-        if (password is not None and self.isValidVoter(user, password)):
+        if (password is not None and self.isValidVoter(user, password) and self.voting):
             encrypted_vote_list = [self.pPub.encrypt(v) for v in vote]
             self.voters[user] = None
             enc_expanded = [
@@ -63,6 +65,8 @@ class ElectionBoard():
             quit()
 
     def receiveTotals(self):
+        self.voting = False
+        self.waiting = True
         self.comm.sendMessage(json.dumps('ENDVOTING'))
         self.comm.closeConn()
         self.comm.initiateConn()
@@ -76,29 +80,35 @@ class ButtonFrame(tk.Frame):
     def __init__(self, master, buttonText, buttonCommand, quitCommand):
         tk.Frame.__init__(self, master)
         otherButton = tk.Button(self, text=buttonText, command=buttonCommand)
-        quitButton = tk.Button(self, text='Quit', command=quitCommand)
+        # quitButton = tk.Button(self, text='Quit', command=quitCommand)
         otherButton.pack(side=tk.LEFT, padx=60, pady=10)
-        quitButton.pack(side=tk.RIGHT, padx=60, pady=10)
+        # quitButton.pack(side=tk.RIGHT, padx=60, pady=10)
 
 
 class ElectionBoardGUI(tk.Frame):
     def __init__(self, master):
         self.model = ElectionBoard()
+        self.master = master
+        self.voting = True
+        f = open('../common/candidates.json', 'r')
+        self.candidates = json.loads(f.read())
+        f.close()
         tk.Frame.__init__(self, master)
         master.minsize(400, 400)
 
-        temp = tk.Frame(master)
-        b1 = tk.Button(temp, text="Register Voter",
-                       command=self.displayRegistration)
-        b2 = tk.Button(temp, text="Start Vote",
-                       command=self.displayStartVote)
-        b1.pack()
-        b2.pack()
-        label1 = tk.Label(master, text="1st page")
-        label1.pack()
-        temp.pack()
-        temp = ButtonFrame(master, "OK", self.quit, self.quit)
+        self.main = tk.Frame(master, width=400, height=400)
+        temp = ButtonFrame(self.main, "Register Voter",
+                           self.displayRegistration, self.displayRegistration)
+        temp.pack(side=tk.LEFT)
+
+        temp = ButtonFrame(self.main, "Start Vote",
+                           self.displayStartVote, self.displayStartVote)
+        temp.pack(side=tk.RIGHT)
+
+        temp = ButtonFrame(self.main, "Close", self.quit, self.quit)
         temp.pack(side=tk.BOTTOM)
+
+        self.main.pack(fill=tk.BOTH, expand=True)
 
     # displays the registration screen
     def displayRegistration(self):
@@ -108,39 +118,58 @@ class ElectionBoardGUI(tk.Frame):
         regWin.title("Register Voter")
         username = tk.StringVar()
         username.set(user)
-        usernameBox = tk.Entry(regWin, textvariable=username, relief='flat', state='readonly', readonlybackground='white', fg='black')
+        usernameBox = tk.Entry(
+            regWin, textvariable=username, relief='flat',
+            state='readonly', readonlybackground='white', fg='black')
         usernameLabel = tk.Label(regWin, text="UserName: ")
         usernameLabel.pack()
         usernameBox.pack()
         password = tk.StringVar()
         password.set(passw)
-        passwordBox = tk.Entry(regWin, textvariable=password, relief='flat', state='readonly', readonlybackground='white', fg='black')
+        passwordBox = tk.Entry(
+            regWin, textvariable=password, relief='flat',
+            state='readonly', readonlybackground='white', fg='black')
         passwordLabel = tk.Label(regWin, text="Password: ")
         passwordLabel.pack()
         passwordBox.pack()
-        temp = ButtonFrame(regWin, "OK", regWin.destroy, regWin.destroy)
+        temp = ButtonFrame(regWin, "Close", regWin.destroy, regWin.destroy)
         temp.pack(side=tk.BOTTOM)
 
     # displays the start voting screen
     def displayStartVote(self):
-        print("startvote")
-        voteWin = tk.Toplevel()
-        voteWin.title("Start Voting")
+        started = self.model.startVote()
+        if started:
+            self.voting = True
+            self.master.title("Voting Period")
+            self.main.destroy()
+            self.main = tk.Frame(self.master, width=400, height=400)
+            temp = ButtonFrame(self.main, "Vote",
+                               self.displayVoting, self.displayVoting)
+            temp.pack(side=tk.LEFT)
 
-        voteButton = tk.Button(voteWin, text="Vote",
-                               command=self.displayVoting)
-        voteButton.pack()
-        endButt = tk.Button(voteWin, text="End Vote",
-                            command=self.displayEndVoting)
-        endButt.pack()
+            temp = ButtonFrame(self.main, "End Vote",
+                               self.displayEndVoting, self.displayEndVoting)
+            temp.pack(side=tk.RIGHT)
+            self.main.pack(fill=tk.BOTH, expand=True)
 
-        temp = ButtonFrame(voteWin, "OK", voteWin.destroy, voteWin.destroy)
-        temp.pack(side=tk.BOTTOM)
+    def submitVote(self, user, passw, vote, me):
+        if user == '' or passw == '' or vote == '':
+            pass
+        else:
+            realVote = []
+            vote = int(vote)
+            for i in range(len(self.candidates['choices'])):
+                if i == vote:
+                    realVote.append(1)
+                else:
+                    realVote.append(0)
+            self.model.sendVote(user, passw, realVote)
+        me.destroy()
 
     def displayVoting(self):
         print("voting")
         voteWin = tk.Toplevel()
-        voteWin.title("Voting Screen")
+        voteWin.title("Voting Card")
 
         temp = tk.Frame(voteWin)
         username = tk.StringVar()
@@ -155,29 +184,37 @@ class ElectionBoardGUI(tk.Frame):
         passwordLabel.pack()
         passwordBox.pack()
 
-        voteText = tk.Label(temp, text="Who are you voting for?")
+        voteText = tk.Label(temp, text=self.candidates['question'])
         voteText.pack()
-        candidates = ["1", "2", "3", "4"]
+
         var = tk.StringVar()
-        for candi in candidates:
-            t = tk.Radiobutton(temp, text=candi, value=candi, variable=var)
+        i = 0
+        for candi in self.candidates['choices']:
+            t = tk.Radiobutton(temp, text=candi, value=i, variable=var)
+            i += 1
             t.pack()
         temp.pack()
-
-        temp = ButtonFrame(voteWin, "Submit", voteWin.destroy, voteWin.destroy)
+        temp = ButtonFrame(voteWin, "Submit",
+                           lambda: self.submitVote(username.get(),
+                                                   password.get(),
+                                                   var.get(),
+                                                   voteWin),
+                           lambda: self.submitVote(username.get(),
+                                                   password.get(),
+                                                   var.get(),
+                                                   voteWin))
         temp.pack(side=tk.BOTTOM)
 
     def displayEndVoting(self):
         print("End Voting")
-        voteWin = tk.Toplevel()
-        voteWin.title("End Voting Screen")
+        self.master.title("Waiting for Results")
+        self.main.destroy()
+        self.main = tk.Frame(self.master, width=400, height=400)
 
-        waitingLabel = tk.Label(voteWin,
-                                text="waiting for tallies to finish...")
+        waitingLabel = tk.Label(self.main,
+                                text="Waiting for results to be tallied...")
         waitingLabel.pack()
-
-        temp = ButtonFrame(voteWin, "OK", voteWin.destroy, voteWin.destroy)
-        temp.pack(side=tk.BOTTOM)
+        self.main.pack(fill=tk.BOTH, expand=True)
 
 
 if __name__ == '__main__':
