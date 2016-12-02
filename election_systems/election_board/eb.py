@@ -41,8 +41,8 @@ class ElectionBoard():
             return user, password
         return None, None
 
-    def isValidVoter(self, user, password):
-        return self.voters[user] == hashlib.sha256(password.encode('utf-8')).hexdigest()
+    def isValidVoter(self, user, passw):
+        return self.voters[user] == hashlib.sha256(passw.encode('utf-8')).hexdigest()
 
     def startVote(self):
         # check to make sure that bb server is running at host
@@ -70,9 +70,18 @@ class ElectionBoard():
         self.comm.sendMessage(json.dumps('ENDVOTING'))
         self.comm.closeConn()
         self.comm.initiateConn()
-        res = json.loads(self.comm.receiveMessage('ca'))
-        decrypted_total_list = [self.pPriv.decrypt(v) for v in res]
-        return decrypted_total_list
+        pub_rec = {'g': int(self.pPub.g), 'n': int(self.pPub.n)}
+        self.comm.sendMessage(json.dumps(pub_rec))
+        res = self.comm.receiveMessage('ca')
+        print('got here')
+        f = open('../common/comm.line', 'r')
+        res = f.read()
+        f.close()
+        msg = json.loads(res)
+        print(msg)
+        tmp = [paillier.EncryptedNumber(self.pPub, int(v), 0) for v in msg]
+        decrypted_total_list = [self.pPriv.decrypt(v) for v in tmp]
+        print(decrypted_total_list)
 
 
 # class that displays quit and confirm type buttons on each page

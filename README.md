@@ -16,6 +16,8 @@ Now you're all good to go!
 ## Usage
 
 ## Assumptions
+* It is acceptable to postpone the election if the /secure/ lines connecting the services are breached.
+* The paillier keys would be cycled out each new vote.
 
 ## Design
 Each class is designed with a GUI using the Python standard libraray Tkinter. Therefore there are two classes per object.

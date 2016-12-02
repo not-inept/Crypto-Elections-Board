@@ -21,24 +21,29 @@ class BulletinBoard():
         self.comm = Comm('bb', 6969)
 
     def receiveVotes(self, tkobj):
+        seen = set()
         app.update_idletasks()
         app.update()
         self.comm.initiateConn()
         keepGoing = True
         while keepGoing:
             res = self.comm.receiveMessage('eb')
-            msg = json.loads(res)
-            print(msg)
-            if msg == 'ENDVOTING':
-                keepGoing = False
-            else:
-                self.votes.append(msg)
-                tkobj.updateVoteList()
+            if res not in seen:
+                msg = json.loads(res)
+                if msg == 'ENDVOTING':
+                    keepGoing = False
+                else:
+                    self.votes.append(msg)
+                    tkobj.updateVoteList()
+                seen.add(res)
             app.update_idletasks()
             app.update()
         self.comm.closeConn()
         self.comm.joinConn(self.ca_location[0], self.ca_location[1])
-        self.comm.sendMessage(json.dumps(self.votes))
+        f = open('../common/comm.line', 'w')
+        f.write(json.dumps(self.votes))
+        f.close()
+        self.comm.sendMessage('STORED'*10)
         self.comm.closeConn()
         quit()
 

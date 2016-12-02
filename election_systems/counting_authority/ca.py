@@ -7,6 +7,7 @@ parentdir = os.path.dirname(currentdir)
 sys.path.insert(0,parentdir) 
 from common.communications import Comm
 import tkinter as tk
+from phe import paillier
 
 
 class CountingAuthority():
@@ -14,21 +15,45 @@ class CountingAuthority():
         self.bb_location = ('localhost', 6969)
         self.eb_location = ('localhost', 5858)
         self.comm = Comm('ca', 1337)
-
-    def sendVotes(self):
-        return
-
-    def tallyVotes(self):
-        
-        return
+        self.votes = None
+        self.ebpPub = None
 
     def receiveVotes(self):
         self.comm.initiateConn()
         res = self.comm.receiveMessage('bb')
-        msg = json.loads(res)
+        f = open('../common/comm.line', 'r')
+        self.votes = json.loads(f.read())
+        f.close()
+
         self.comm.closeConn()
-        print(msg)
-        self.votes = msg
+        print(self.votes)
+        self.comm.joinConn(self.eb_location[0], self.eb_location[1])
+        res = self.comm.receiveMessage('eb')
+
+        msg = json.loads(res)
+        self.ebpPub = paillier.PaillierPublicKey(g=long(msg['g']),
+                                                 n=long(msg['n']))
+        for i in range(len(self.votes)):
+            for j in range(len(self.votes[i])):
+                self.votes[i][j] = paillier.EncryptedNumber(
+                    self.ebpPub, long(self.votes[i][j]), 0)
+        totals = []
+        if (len(self.votes) > 0):
+            totals = self.votes.pop(0)
+        for i in self.votes:
+            if len(self.votes) != len(totals):
+                quit()
+            for j in self.votes[i]:
+                totals[j] += self.votes[i][j]
+        totals_expanded = [
+            str(x.ciphertext()) for x in totals
+        ]
+        f = open('../common/comm.line', 'w')
+        f.write(json.dumps(totals_expanded))
+        f.close()
+        self.comm.sendMessage("SENTOFF"*10)
+        self.comm.closeConn()
+        quit()
 
 
 class CountingAuthorityGUI(tk.Frame):
