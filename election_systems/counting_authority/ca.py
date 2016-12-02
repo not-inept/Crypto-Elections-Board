@@ -2,12 +2,14 @@ import json
 import os
 import sys
 import inspect
-currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
-parentdir = os.path.dirname(currentdir)
-sys.path.insert(0,parentdir) 
-from common.communications import Comm
 import tkinter as tk
 from phe import paillier
+currentdir = os.path.dirname(os.path.abspath(inspect.getfile(
+    inspect.currentframe())))
+parentdir = os.path.dirname(currentdir)
+sys.path.insert(0, parentdir)
+from common.communications import Comm
+
 
 
 class CountingAuthority():
@@ -17,6 +19,12 @@ class CountingAuthority():
         self.comm = Comm('ca', 1337)
         self.votes = None
         self.ebpPub = None
+
+    def sendVotes(self):
+        return
+
+    def tallyVotes(self):
+        return
 
     def receiveVotes(self):
         self.comm.initiateConn()
