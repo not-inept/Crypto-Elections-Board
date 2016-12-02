@@ -126,6 +126,11 @@ class ElectionBoardGUI(tk.Frame):
 
         voteText = tk.Label(temp, text="Who are you voting for?")
         voteText.pack()
+        candidates = ["1", "2", "3", "4"]
+        var = tk.StringVar()
+        for candi in candidates:
+            t = tk.Radiobutton(temp, text=candi, value=candi, variable=var)
+            t.pack()
         temp.pack()
 
         temp = ButtonFrame(voteWin, "Submit", voteWin.destroy, voteWin.destroy)

@@ -40,6 +40,12 @@ class BulletinBoardGUI(tk.Frame):
                 label = tk.Label(text='%d.%d' % (i, j), relief=tk.RIDGE)
                 label.grid(row=i, column=j, sticky=tk.NSEW)
 
+    def votersCollected(self):
+        vLabel = tk.Label(text="Voters Calculated")
+        vLabel.pack()
+        quitButton = tk.Button(self, text="Quit", command=self.quit)
+        quitButton.pack()
+
 
 if __name__ == '__main__':
     app = BulletinBoardGUI()
