@@ -9,10 +9,11 @@ from phe import paillier
 import os
 import sys
 import inspect
-currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
-parentdir = os.path.dirname(currentdir)
-sys.path.insert(0,parentdir) 
 from common.communications import Comm
+currentdir = os.path.dirname(os.path.abspath(inspect.getfile(
+    inspect.currentframe())))
+parentdir = os.path.dirname(currentdir)
+sys.path.insert(0, parentdir)
 
 
 class ElectionBoard():
@@ -42,7 +43,8 @@ class ElectionBoard():
         return None, None
 
     def isValidVoter(self, user, password):
-        return self.voters[user] == hashlib.sha256(password.encode('utf-8')).hexdigest()
+        return self.voters[user] == hashlib.sha256(
+            password.encode('utf-8')).hexdigest()
 
     def startVote(self):
         # check to make sure that bb server is running at host
@@ -54,7 +56,8 @@ class ElectionBoard():
         return True
 
     def sendVote(self, user, password, vote):
-        if (password is not None and self.isValidVoter(user, password) and self.voting):
+        if (password is not None and self.isValidVoter(
+            user, password) and self.voting):
             encrypted_vote_list = [self.pPub.encrypt(v) for v in vote]
             self.voters[user] = None
             enc_expanded = [
