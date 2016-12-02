@@ -15,6 +15,7 @@ Now you're all good to go!
 
 ## Usage
 
+## Assumptions
 
 ## Design
 Each class is designed with a GUI using the Python standard libraray Tkinter. Therefore there are two classes per object.

@@ -10,23 +10,28 @@ class Comm():
     def __init__(self, me, port):
         self.s = None
         self.con = None
-        self.verified = False
         self.me = me
         self.port = port
-        f = open('./' + self.me + '_rsa_public.pem', 'r')
+        f = open('../common/' + self.me + '_rsa_public.pem', 'r')
         self.pub = RSA.importKey(f.read())
         f.close()
+        f = open('./' + self.me + '_rsa_private.pem', 'r')
+        self.priv = RSA.importKey(f.read())
+        f.close()
 
-    def getKey(self, who):
-        return
+    def getKey(self, them):
+        f = open('../common/' + them + '_rsa_public.pem', 'r')
+        key = RSA.importKey(f.read())
+        f.close()
+        return key
 
-    def blindSignRSA(self, priv, pub, msg):
-        r = SystemRandom().randrange(pub.n >> 10, pub.n)
+    def blindSignRSA(self, msg):
+        r = SystemRandom().randrange(self.pub.n >> 10, self.pub.n)
         hsh = SHA256.new()
         hsh.update(msg.encode('utf-8'))
         msgDigest = hsh.digest()
-        blind = pub.blind(msgDigest, r)
-        blind_signature = priv.sign(blind, 0)
+        blind = self.pub.blind(msgDigest, r)
+        blind_signature = self.priv.sign(blind, 0)
         return blind_signature, r
 
     def verifyBlindSignature(self, them, res):
@@ -37,37 +42,24 @@ class Comm():
         r = res['r']
         blind_signature = res['sig']
         msg = res['phrase']
-        f = open('./' + them + '_rsa_public.pem', 'r')
-        theirPub = RSA.importKey(f.read())
-        f.close()
+        theirPub = self.getKey(them)
         signature = theirPub.unblind(blind_signature, r)
         hsh = SHA256.new()
         hsh.update(msg.encode('utf-8'))
         msgDigest = hsh.digest()
         return theirPub.verify(msgDigest, (signature,))
 
-    def sendMessage(self, them, msg):
-        return
+    def sendMessage(self, msg):
+        blind, r = self.bindSignRSA(msg)
+        msg = {'sig': blind, 'r': r, 'phrase': msg}
+        self.s.send(msg)
 
-    def receiveMessage(self, them, msg):
-        return
-
-    def sendHandshake(self, them):
-        N = 512
-        phrase = ''.join(SystemRandom().choice(
-            string.ascii_uppercase + string.digits) for _ in range(N))
-
-        myPriv, myPub = None, None
-        signature, r = self.blindSignRSA(myPriv, myPub, phrase)
-        msg = json.dumps({'sig': signature, 'phrase': phrase, 'r': r})
-        self.conn.send(msg)
-
-    def receiveHandshake(self, them):
-        res = self.conn.recv(4096)
-        if not self.verifySignature(them, res):
-            self.closeConn()
+    def receiveMessage(self, them):
+        res = self.s.recv(8192)
+        if self.verifyBlindSignature(them, res):
+            return res
         else:
-            self.verified = True
+            self.quit()
 
     def initiateConn(self, port):
         # create socket and make self visible
@@ -81,5 +73,9 @@ class Comm():
         self.s.connect((host, port))
         self.conn = self.s
 
-    def closeConn(self):
+    def quit(self):
         self.s.close()
+        self.s = None
+        self.con = None
+        print('I should quit')
+        quit()

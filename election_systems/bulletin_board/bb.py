@@ -1,6 +1,14 @@
 #!/usr/bin/env python
 
 import tkinter as tk
+import json
+import os
+import sys
+import inspect
+currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
+parentdir = os.path.dirname(currentdir)
+sys.path.insert(0,parentdir) 
+from common.communications import Comm
 
 
 # Graphical BulletenBoardGUI class manages data with BullitenBoard object
@@ -9,17 +17,21 @@ class BulletinBoard():
         self.votes = []
         self.ca_location = ('localhost', 1337)
         self.eb_location = ('localhost', 5858)
-
-    def verifyUniqueVotes(self):
-        return
+        self.comm = Comm('bb', 6969)
 
     def receiveVotes(self):
-        return
+        self.comm.initiateConn()
+        keepGoing = True
+        while keepGoing:
+            res = self.comm.receiveMessage('eb')
+            msg = json.loads(res)
+            if msg == 'ENDVOTING':
+                keepGoing = False
+            else:
+                self.votes.append(json.loads(msg['phrase']))
+                self.listVotes()
 
     def listVotes(self):
-        return
-
-    def listenForEb(self):
         return
 
 
