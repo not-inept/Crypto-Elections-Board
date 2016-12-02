@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import tkinter as tk
+from tkinter.scrolledtext import ScrolledText
 import json
 import os
 import sys
@@ -32,6 +33,8 @@ class BulletinBoard():
                 self.votes.append(msg)
                 self.listVotes()
                 tkobj.updateVoteList()
+            app.update_idletasks()
+            app.update()
 
     def listVotes(self):
         # print(self.votes)
@@ -39,21 +42,19 @@ class BulletinBoard():
 
 
 class BulletinBoardGUI(tk.Frame):
-    def __init__(self, master=None):
+    def __init__(self, master):
         self.model = BulletinBoard()
+        f = open('../common/candidates.json', 'r')
+        self.candidates = json.loads(f.read())
+        f.close()
         tk.Frame.__init__(self, master)
-        self.grid()
-        self.createWidgets()
+        master.minsize(400, 400)
+        self.master = master
+        self.main = tk.Frame(self.master, width=400, height=400)
+        self.updateVoteList()
 
-    def createWidgets(self):
-        self.quitButton = tk.Button(self, text='Quit',
-                                    command=self.quit)
-        self.quitButton.grid()
+    def receiveVotes(self):
         self.model.receiveVotes(self)
-        # for i in range(100):
-        #     for j in range(4):
-        #         label = tk.Label(text='%d.%d' % (i, j), relief=tk.RIDGE)
-        #         label.grid(row=i, column=j, sticky=tk.NSEW)
 
     def votersCollected(self):
         vLabel = tk.Label(text="Voters Calculated")
@@ -62,10 +63,25 @@ class BulletinBoardGUI(tk.Frame):
         quitButton.pack()
 
     def updateVoteList(self):
-        print('should do the thing')
+        self.main.destroy()
+        # for i in range(len(self.model.votes)):
+        #     for j in range(4):
+        #         label = tk.Label(
+        #             text='%d.%d' % (i, j), relief=tk.RIDGE)
+        #         label.grid(row=i, column=j, sticky=tk.NSEW)
+        # self.grid()
+        innards = ''
+        for i in range(len(self.model.votes)):
+            innards += json.dumps(self.model.votes[i]) + '\n'
+        self.main = tk.Frame(self.master, width=400, height=400)
+        st = ScrolledText(self.main, width=400, height=400)
+        st.pack()
+        st.insert(tk.END, innards)
+        self.main.pack(fill=tk.BOTH, expand=True)
 
 
 if __name__ == '__main__':
-    app = BulletinBoardGUI()
+    window = tk.Tk()
+    app = BulletinBoardGUI(window)
     app.master.title('Bulletin Board Application')
-    app.mainloop()
+    app.receiveVotes()
