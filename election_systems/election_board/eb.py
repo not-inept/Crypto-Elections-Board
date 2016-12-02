@@ -16,7 +16,6 @@ sys.path.insert(0, parentdir)
 from common.communications import Comm
 
 
-
 class ElectionBoard():
     def __init__(self):
         self.voters = {}

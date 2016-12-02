@@ -11,7 +11,6 @@ sys.path.insert(0, parentdir)
 from common.communications import Comm
 
 
-
 class CountingAuthority():
     def __init__(self):
         self.bb_location = ('localhost', 6969)
@@ -39,12 +38,12 @@ class CountingAuthority():
         res = self.comm.receiveMessage('eb')
 
         msg = json.loads(res)
-        self.ebpPub = paillier.PaillierPublicKey(g=long(msg['g']),
-                                                 n=long(msg['n']))
+        self.ebpPub = paillier.PaillierPublicKey(g=int(msg['g']),
+                                                 n=int(msg['n']))
         for i in range(len(self.votes)):
             for j in range(len(self.votes[i])):
                 self.votes[i][j] = paillier.EncryptedNumber(
-                    self.ebpPub, long(self.votes[i][j]), 0)
+                    self.ebpPub, int(self.votes[i][j]), 0)
         totals = []
         if (len(self.votes) > 0):
             totals = self.votes.pop(0)

@@ -56,7 +56,7 @@ class BulletinBoardGUI(tk.Frame):
         self.candidates = json.loads(f.read())
         f.close()
         tk.Frame.__init__(self, master)
-        master.minsize(400, 400)
+        master.maxsize(400, 400)
         self.master = master
         self.main = tk.Frame(self.master, width=400, height=400)
         self.updateVoteList()
